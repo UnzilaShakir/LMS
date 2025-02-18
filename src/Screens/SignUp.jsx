@@ -1,34 +1,42 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../FirebaseConfig';
 
-const Login = () => {
+
+const SignUp = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const handleLogin = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const userLoged = await  signInWithEmailAndPassword(auth,email,password);
-      console.log(userLoged,"User logged in:");
-      const userData = userLoged.user;
-      console.log(userData);
-      navigate('/dashboard')
-      
-      
+     await  createUserWithEmailAndPassword(auth,email,password)
+     const user = auth.currentUser;
+     console.log(user,"user created sucessfully" );
+     navigate('/dashboard')
     } catch (error) {
-      console.log(error);
+        console.log(error);
     }
-    
+
   };
 
   return (
     <Box sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 3, boxShadow: 3 }}>
-      <Typography variant="h4" gutterBottom>Login</Typography>
-      <form onSubmit={handleLogin}>
+      <Typography variant="h4" gutterBottom>Sign Up</Typography>
+      <form onSubmit={handleSignUp}>
+        <TextField 
+          fullWidth 
+          label="Name" 
+          variant="outlined" 
+          margin="normal" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          required 
+        />
         <TextField 
           fullWidth 
           label="Email" 
@@ -48,13 +56,13 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)} 
           required 
         />
-        <Button fullWidth variant="contained" type="submit">Login</Button>
+        <Button fullWidth variant="contained" type="submit">Sign Up</Button>
       </form>
       <Typography variant="body2" sx={{ mt: 2 }}>
-        Don't have an account? <Link to="/signup">Sign Up here</Link>
+        Already have an account? <Link to="/login">Login here</Link>
       </Typography>
     </Box>
   );
 };
 
-export default Login;
+export default SignUp;
